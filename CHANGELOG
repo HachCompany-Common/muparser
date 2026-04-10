@@ -28,6 +28,11 @@ Rev 2.3.6: 07.03.2026
   Fixes:
    * Fix for #167 (https://github.com/beltoforion/muparser/pull/167):
      Added additional range checks for accessing internal value stack.
+   * Fix for #168 (https://github.com/beltoforion/muparser/pull/169):
+     ClearConst() now also clears m_vStringVarBuf to keep it in sync
+     with m_StrVarDef. Previously, repeated calls to ClearConst()
+     followed by DefineStrConst() caused stale entries to accumulate
+     in the string value buffer.
 
 
 Rev 2.3.5: 13.12.2024

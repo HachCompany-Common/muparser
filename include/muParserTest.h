@@ -267,7 +267,8 @@ namespace mu
 			int TestOptimizer();
 			int TestLocalization();
 			int TestIssue165();
-			
+			int TestIssue168();
+
 			void Abort() const;
 
 		public:

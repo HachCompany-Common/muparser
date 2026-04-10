@@ -65,6 +65,7 @@ namespace mu
 			AddTest(&ParserTester::TestOptimizer);
 			AddTest(&ParserTester::TestLocalization);
 			AddTest(&ParserTester::TestIssue165);
+		AddTest(&ParserTester::TestIssue168);
 
 			ParserTester::c_iCount = 0;
 		}
@@ -1746,6 +1747,61 @@ namespace mu
 			{
 				mu::console() << _T("\n  fail: unexpected exception");
 				return 1;  // exceptions other than ParserException are not allowed
+			}
+
+			return iRet;
+		}
+
+		//---------------------------------------------------------------------------
+		// Regression test: ClearConst() must also clear m_vStringVarBuf.
+		//
+		// Currently ClearConst() clears m_StrVarDef but not m_vStringVarBuf, so
+		// the value buffer silently accumulates stale entries across calls.  After
+		// one round of DefineStrConst + ClearConst + DefineStrConst the buffer
+		// should have 2 entries (not 4).  This test will FAIL until the bug is fixed.
+		int ParserTester::TestIssue168()
+		{
+			ParserTester::c_iCount++;
+			int iRet(0);
+
+			mu::console() << _T("testing github issue 168...");
+
+			try
+			{
+				Parser p;
+				p.DefineFun(_T("strlen"), StrLen);
+
+				p.DefineStrConst(_T("s1"), _T("hello"));
+				p.DefineStrConst(_T("s2"), _T("world"));
+				p.SetExpr(_T("strlen(s1)+strlen(s2)"));
+				p.Eval();
+
+				p.ClearConst();
+
+				p.DefineStrConst(_T("s1"), _T("hi"));
+				p.DefineStrConst(_T("s2"), _T("!"));
+				p.SetExpr(_T("strlen(s1)+strlen(s2)"));
+				p.Eval();
+
+				// After ClearConst + re-registration the buffer should hold exactly
+				// 2 entries.  If ClearConst does not clear it, the buffer has 4.
+				std::size_t sz = p.m_vStringVarBuf.size();
+				if (sz != 2)
+				{
+					mu::console() << _T("\n  fail: m_vStringVarBuf.size() == ") << sz
+					              << _T(" (expected 2 — ClearConst does not clear the buffer)");
+					iRet++;
+				}
+
+				if (iRet == 0)
+					mu::console() << _T("passed") << endl;
+				else
+					mu::console() << _T("\n  failed with ") << iRet << _T(" errors") << endl;
+			}
+			catch (...)
+			{
+				mu::console() << _T("\n  fail: unexpected exception");
+				return 1;
 			}
 
 			return iRet;
