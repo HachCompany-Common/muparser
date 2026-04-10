@@ -1637,6 +1637,7 @@ namespace mu
 	{
 		m_ConstDef.clear();
 		m_StrVarDef.clear();
+		m_vStringVarBuf.clear();
 		ReInit();
 	}
 
