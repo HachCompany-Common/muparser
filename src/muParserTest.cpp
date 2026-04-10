@@ -65,7 +65,7 @@ namespace mu
 			AddTest(&ParserTester::TestOptimizer);
 			AddTest(&ParserTester::TestLocalization);
 			AddTest(&ParserTester::TestIssue165);
-		AddTest(&ParserTester::TestClearConst);
+		AddTest(&ParserTester::TestIssue168);
 
 			ParserTester::c_iCount = 0;
 		}
@@ -1759,12 +1759,12 @@ namespace mu
 		// the value buffer silently accumulates stale entries across calls.  After
 		// one round of DefineStrConst + ClearConst + DefineStrConst the buffer
 		// should have 2 entries (not 4).  This test will FAIL until the bug is fixed.
-		int ParserTester::TestClearConst()
+		int ParserTester::TestIssue168()
 		{
 			ParserTester::c_iCount++;
 			int iRet(0);
 
-			mu::console() << _T("testing ClearConst consistency...");
+			mu::console() << _T("testing github issue 168...");
 
 			try
 			{
