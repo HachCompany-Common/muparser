@@ -239,7 +239,8 @@ static value_type Help()
 	mu::console() << _T("  locale de    - switch to german locale\n");
 	mu::console() << _T("  locale en    - switch to english locale\n");
 	mu::console() << _T("  locale reset - reset locale\n");
-	mu::console() << _T("  test bulk    - test bulk mode\n");
+	mu::console() << _T("  test bulk     - test bulk mode\n");
+	mu::console() << _T("  test strconst - test string constant re-registration after ClearConst\n");
 	mu::console() << _T("  quit         - exits the parser\n");
 	mu::console() << _T("\nConstants:\n\n");
 	mu::console() << _T("  \"_e\"   2.718281828459045235360287\n");
@@ -376,6 +377,39 @@ static int CheckKeywords(const mu::char_type* a_szLine, mu::Parser& a_Parser)
 	{
 		mu::console() << _T("Testing bulk mode\n");
 		CalcBulk();
+		return 1;
+	}
+	else if (sLine == _T("test strconst"))
+	{
+		// Exercise the code path in IsStrVarTok that has the weak bounds check.
+		//
+		// ClearConst() clears m_StrVarDef (the name->index map) but does NOT
+		// clear m_vStringVarBuf (the value buffer).  Each subsequent call to
+		// DefineStrConst appends to the buffer and stores the new tail index.
+		// After N round-trips the buffer has 2*N entries while the map only
+		// holds N entries pointing at the upper half.
+		//
+		// The existing guard  "if (!m_vStringVarBuf.size())"  passes in all
+		// rounds because the buffer is never empty.  A correct guard would
+		// check  "item->second >= m_vStringVarBuf.size()"  which also passes
+		// here — but only because the index happens to be valid.  Any code
+		// path that writes an index into m_StrVarDef without a matching
+		// push_back would slip past the existing check undetected.
+
+		mu::Parser p;
+		p.DefineFun(_T("strfun0"), StrFun0);
+
+		for (int round = 0; round < 3; ++round)
+		{
+			p.DefineStrConst(_T("sVar1"), _T("hello"));
+			p.DefineStrConst(_T("sVar2"), _T("world"));
+
+			p.SetExpr(_T("strfun0(sVar1) + strfun0(sVar2)"));
+			mu::console() << _T("round ") << round << _T(": ans=") << p.Eval() << _T("\n");
+
+			// Clear only the constant map; the value buffer keeps growing.
+			p.ClearConst();
+		}
 		return 1;
 	}
 	else if (sLine == _T("dbg"))
