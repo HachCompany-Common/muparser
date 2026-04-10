@@ -7,13 +7,17 @@ muparser - fast math parser library
 
 ![title](https://github.com/beltoforion/muparser/assets/2202567/fbeb2347-9884-4dd7-a3c9-112b605d7390)
 
-Change Notes for Revision 2.3.6 (2026-03-07)
+Change Notes for Revision 2.3.6 (2026-04-10)
 ===========================
   
   Changes:
   -----------
   - Issue https://github.com/beltoforion/muparser/issues/161: Add HasFun function added to query the existance of a function under a given name.
   - Issue https://github.com/beltoforion/muparser/issues/93: Add cotangent function
+
+  Security Fixes:
+  -----------
+  - Issue https://github.com/beltoforion/muparser/issues/167: Add additional checks to eliminate possibility of access violations due to malformed expressions. I dont have test cases and do not know whether this issue was exploitable at all but fixing them made sense.
 
   Fixed Compiler Warnings and Errors:
   -----------
