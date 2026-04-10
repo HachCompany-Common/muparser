@@ -17,7 +17,7 @@ Change Notes for Revision 2.3.6 (2026-04-10)
 
   Security Fixes:
   -----------
-  - Issue https://github.com/beltoforion/muparser/issues/167: Add additional checks to eliminate possibility of access violations due to malformed expressions. I dont have test cases and do not know whether this issue was exploitable at all but for safety fixing them made sense.
+  - Issue https://github.com/beltoforion/muparser/issues/167: Add additional checks to eliminate possibility of access violations due to malformed expressions. I dont have test cases and do not know whether this issue was exploitable at all but fixing them made sense.
 
   Fixed Compiler Warnings and Errors:
   -----------
